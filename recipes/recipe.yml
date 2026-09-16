@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+---
+version: 1
+name: computers
+description: Custom Fedora Silverblue image for attraktorhh/computers
+base-image: ghcr.io/ublue-os/silverblue-main
+image-version: latest
+modules:
+  - type: default-flatpaks
+    configurations:
+      - scope: system
+        install:
+          - com.orcaslicer.OrcaSlicer
+  - type: signing
