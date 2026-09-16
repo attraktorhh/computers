@@ -4,6 +4,11 @@ version: 1
 name: computers
 description: Custom Fedora Silverblue image for attraktorhh/computers
 base-image: ghcr.io/ublue-os/silverblue-main
-image-version: 42
+image-version: latest
 modules:
+  - type: default-flatpaks
+    configurations:
+      - scope: system
+        install:
+          - io.github.softfever.OrcaSlicer
   - type: signing
