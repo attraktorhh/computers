@@ -10,5 +10,5 @@ modules:
     configurations:
       - scope: system
         install:
-          - io.github.softfever.OrcaSlicer
+          - com.orcaslicer.OrcaSlicer
   - type: signing
