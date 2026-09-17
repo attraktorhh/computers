@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 ---
 version: 1
-name: computers
+name: silverblue
 description: Custom Fedora Silverblue image for attraktorhh/computers
 base-image: ghcr.io/ublue-os/silverblue-main
 image-version: latest
@@ -10,5 +10,15 @@ modules:
     configurations:
       - scope: system
         install:
+          - cc.arduino.IDE2
+          - com.obsproject.Studio
           - com.orcaslicer.OrcaSlicer
+          - com.visualstudio.code
+          - dev.zed.Zed
+          - edu.mit.Scratch
+          - net.scribus.Scribus
+          - org.freecad.FreeCAD
+          - org.gimp.GIMP
+          - org.inkscape.Inkscape
+          - org.kde.krita
   - type: signing
