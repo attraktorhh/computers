@@ -1,0 +1,11 @@
+[Unit]
+Description=Temporary home directory for the guest user
+# Unmounted as soon as nothing needs it anymore, i.e. when the guest logs out
+StopWhenUnneeded=yes
+
+[Mount]
+What=tmpfs
+Where=/var/home/guest
+Type=tmpfs
+Options=mode=0700,uid=1500,gid=1500,size=2G,nosuid,nodev,rootcontext=system_u:object_r:user_home_dir_t:s0
+LazyUnmount=yes

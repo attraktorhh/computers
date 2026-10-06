@@ -1,0 +1,10 @@
+[Unit]
+Description=Allow passwordless login for the guest user
+After=systemd-sysusers.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/usermod -p '' guest
+
+[Install]
+WantedBy=multi-user.target
