@@ -1,0 +1,13 @@
+[Unit]
+Description=Populate the temporary home directory of the guest user
+Requires=var-home-guest.mount
+After=var-home-guest.mount
+# Stopped when user@1500.service stops, which in turn releases the tmpfs mount
+StopWhenUnneeded=yes
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/cp -rT /etc/skel /var/home/guest
+ExecStart=/usr/bin/chown -R guest:guest /var/home/guest
+ExecStart=-/usr/sbin/restorecon -RF /var/home/guest
