@@ -21,4 +21,8 @@ modules:
           - org.gimp.GIMP
           - org.inkscape.Inkscape
           - org.kde.krita
+  - type: files
+    files:
+      - source: usr
+        destination: /usr
   - type: signing
