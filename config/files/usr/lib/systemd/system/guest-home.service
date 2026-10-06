@@ -1,0 +1,19 @@
+[Unit]
+Description=Populate the temporary home directory of the guest user
+Requires=guest-validate.service var-home-guest.mount
+After=guest-validate.service var-home-guest.mount
+# Stopped when user@1500.service stops, which in turn releases the tmpfs mount
+StopWhenUnneeded=yes
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=-/usr/bin/find /tmp /var/tmp /dev/shm -xdev -mindepth 1 ( -uid 1500 -o -gid 1500 ) -delete
+ExecStart=/usr/bin/cp -rT /etc/skel /var/home/guest
+ExecStart=/usr/bin/chown -R guest:guest /var/home/guest
+ExecStart=-/usr/sbin/restorecon -RF /var/home/guest
+# Kill leftover guest processes and remove the guest's files from the other writable locations
+ExecStop=-/usr/bin/pkill -KILL -u 1500
+ExecStop=-/usr/bin/find /tmp /var/tmp /dev/shm -xdev -mindepth 1 ( -uid 1500 -o -gid 1500 ) -delete
+# Undo a password the guest may have set with passwd, so the next guest can still log in
+ExecStop=/usr/sbin/usermod -p '' guest

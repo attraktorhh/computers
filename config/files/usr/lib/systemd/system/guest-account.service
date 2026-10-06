@@ -1,0 +1,11 @@
+[Unit]
+Description=Allow passwordless login for the guest user
+Requires=guest-validate.service
+After=systemd-sysusers.service guest-validate.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/usermod -p '' guest
+
+[Install]
+WantedBy=multi-user.target
