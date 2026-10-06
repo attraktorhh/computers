@@ -17,6 +17,6 @@ bluebuild build ./recipes/recipe.yml
 After installing Fedora Silverblue, rebase to your built image:
 
 ```bash
-sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/attraktorhh/computers:latest
+sudo rpm-ostree rebase ostree-unverified-registry:ghcr.io/attraktorhh/silverblue:latest
 sudo systemctl reboot
 ```
