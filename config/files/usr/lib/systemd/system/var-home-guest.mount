@@ -1,0 +1,17 @@
+[Unit]
+Description=Temporary home directory for the guest user
+Requires=guest-validate.service
+After=guest-validate.service
+# Started on demand only; the default ordering before local-fs.target would form a cycle with guest-validate.service
+DefaultDependencies=no
+Conflicts=umount.target
+Before=umount.target
+# Unmounted as soon as nothing needs it anymore, i.e. when the guest logs out
+StopWhenUnneeded=yes
+
+[Mount]
+What=tmpfs
+Where=/var/home/guest
+Type=tmpfs
+Options=mode=0700,uid=1500,gid=1500,size=2G,nosuid,nodev,rootcontext=system_u:object_r:user_home_dir_t:s0
+LazyUnmount=yes

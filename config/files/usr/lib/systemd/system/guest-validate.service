@@ -1,0 +1,25 @@
+[Unit]
+Description=Verify the guest account and prepare its mountpoint
+After=systemd-sysusers.service
+# Must be done before any guest manager can start, since daemon-reload does not add dependencies to a running unit
+Before=systemd-logind.service systemd-user-sessions.service polkit.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# The display name (field 5) is editable by the guest and therefore ignored.
+# Fail on any name, UID, GID or primary GID collision (the cleanup in guest-home.service matches the GID), e.g. an existing guest account or UID 1500 owned by somebody else.
+# Everything keyed on UID 1500 (user@1500.service drop-in, tmpfs home) would otherwise hit the wrong account.
+ExecStart=/bin/sh -c 'test "$$(getent passwd guest | cut -d: -f1-4,6-7)" = "guest:x:1500:1500:/var/home/guest:/bin/bash" && test "$$(getent passwd | cut -d: -f3 | grep -cx 1500)" = 1 && test "$$(getent passwd | cut -d: -f4 | grep -cx 1500)" = 1 && test "$$(getent group | cut -d: -f3 | grep -cx 1500)" = 1 && test "$$(getent group 1500)" = "guest:x:1500:" && test "$$(id -Gn guest)" = guest || { echo "guest account conflicts with an existing account, refusing guest session" >&2; exit 1; }'
+# Only touched after validation succeeded, so a conflicting account stays unchanged.
+# The backing directory must not be writable by the guest while the tmpfs is not mounted
+ExecStart=/usr/bin/install -d -m 0700 -o root -g root /var/home/guest
+# A lingering user@1500.service would never release the tmpfs home
+ExecStart=/usr/bin/rm -f /var/lib/systemd/linger/guest
+# Hidden-account metadata and the lingering denial, created only for the validated guest account
+ExecStart=-/bin/sh -c 'test -e /var/lib/AccountsService/users/guest || install -m 0600 -o root -g root /usr/share/guest-account/accountsservice-guest /var/lib/AccountsService/users/guest'
+ExecStart=/usr/bin/install -D -m 0644 /usr/share/guest-account/50-guest-no-linger.rules /run/polkit-1/rules.d/50-guest-no-linger.rules
+# Make user@1500.service depend on the tmpfs home only now that UID 1500 is known to be the guest.
+# The drop-in lives in /run, so it is gone again on the next boot.
+ExecStart=/usr/bin/install -D -m 0644 /usr/share/guest-account/user@1500-guest-home.conf /run/systemd/system/user@1500.service.d/guest-home.conf
+ExecStart=/usr/bin/systemctl daemon-reload
